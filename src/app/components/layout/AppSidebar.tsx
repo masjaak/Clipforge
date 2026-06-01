@@ -1,0 +1,172 @@
+import { useLocation, Link } from "react-router";
+import {
+  LayoutDashboard, FolderOpen, Scissors, Download, Layers,
+  Settings, CreditCard, Zap, ChevronDown, Plus, Bell,
+} from "lucide-react";
+import {
+  Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
+  SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
+  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator,
+  useSidebar,
+} from "../ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { cn } from "../ui/utils";
+
+const navMain = [
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Projects", url: "/projects", icon: FolderOpen, badge: "4" },
+  { title: "Clips", url: "/clips", icon: Scissors, badge: "23" },
+  { title: "Exports", url: "/exports", icon: Download },
+];
+
+const navTools = [
+  { title: "Templates", url: "/templates", icon: Layers },
+  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Billing", url: "/billing", icon: CreditCard },
+];
+
+export function AppSidebar() {
+  const location = useLocation();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
+
+  const isActive = (url: string) => location.pathname === url || location.pathname.startsWith(url + "/");
+
+  return (
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+      <SidebarHeader className="pb-2">
+        <div className={cn("flex items-center gap-2.5 px-2 py-1", collapsed && "justify-center")}>
+          <div className="size-7 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-[0_0_16px_var(--cf-violet-glow)]">
+            <Zap className="size-4 text-white" strokeWidth={2.5} />
+          </div>
+          {!collapsed && (
+            <span className="font-semibold text-sm tracking-tight text-foreground">
+              ClipForge
+            </span>
+          )}
+        </div>
+      </SidebarHeader>
+
+      <SidebarSeparator />
+
+      <SidebarContent className="px-1">
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground/60 uppercase tracking-widest text-[10px]">
+            Main
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navMain.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.url)}
+                    tooltip={item.title}
+                    className={cn(
+                      "rounded-lg transition-all",
+                      isActive(item.url)
+                        ? "bg-primary/15 text-primary hover:bg-primary/20 hover:text-primary"
+                        : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                    )}
+                  >
+                    <Link to={item.url}>
+                      <item.icon className={cn("size-4", isActive(item.url) && "text-primary")} />
+                      <span>{item.title}</span>
+                      {item.badge && !collapsed && (
+                        <Badge
+                          variant="secondary"
+                          className="ml-auto h-5 min-w-5 px-1.5 text-[10px] bg-muted text-muted-foreground border-0"
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground/60 uppercase tracking-widest text-[10px]">
+            Workspace
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navTools.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.url)}
+                    tooltip={item.title}
+                    className={cn(
+                      "rounded-lg transition-all",
+                      isActive(item.url)
+                        ? "bg-primary/15 text-primary hover:bg-primary/20 hover:text-primary"
+                        : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                    )}
+                  >
+                    <Link to={item.url}>
+                      <item.icon className={cn("size-4", isActive(item.url) && "text-primary")} />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarSeparator />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent rounded-lg"
+                >
+                  <Avatar className="size-7 rounded-lg">
+                    <AvatarImage src="https://api.dicebear.com/7.x/shapes/svg?seed=clipforge" />
+                    <AvatarFallback className="rounded-lg bg-primary/20 text-primary text-xs">JD</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col text-left text-xs leading-tight">
+                    <span className="font-medium text-foreground truncate">Jamie Doe</span>
+                    <span className="text-muted-foreground truncate">jamie@studio.io</span>
+                  </div>
+                  <ChevronDown className="ml-auto size-3.5 text-muted-foreground" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="start"
+                className="w-56 bg-card border-border"
+              >
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings className="size-4 mr-2" /> Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Bell className="size-4 mr-2" /> Notifications
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
