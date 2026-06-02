@@ -1,14 +1,19 @@
-import { useParams, useLocation, Link } from "react-router";
+import { useParams, Link } from "react-router";
 import { Button } from "../components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as store from "../lib/videoStore";
 
 export default function ClipReview() {
   const { id } = useParams();
-  const location = useLocation();
-  const [selectedStyle, setSelectedStyle] = useState("modern");
+  const [record, setRecord] = useState(store.get(id || ""));
 
-  const videoUrl = (location.state as any)?.videoUrl || "";
-  const videoName = (location.state as any)?.videoName || "Clip";
+  useEffect(() => {
+    store.init().then(() => {
+      setRecord(store.get(id || ""));
+    });
+  }, [id]);
+
+  const [selectedStyle, setSelectedStyle] = useState("modern");
 
   const captionStyles = [
     { id: "minimal", name: "Minimal", preview: "Clean text, no background" },
@@ -17,6 +22,23 @@ export default function ClipReview() {
     { id: "bold", name: "Bold", preview: "Large, punchy typography" },
     { id: "hormozi", name: "Hormozi", preview: "Yellow highlight on key words" },
   ];
+
+  if (!record) {
+    return (
+      <div className="flex flex-col h-[calc(100vh-3rem)]">
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
+          <Link to="/clips">
+            <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-muted-foreground hover:text-foreground text-xs">
+              Back to clips
+            </Button>
+          </Link>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">Video not found</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-3rem)]">
@@ -27,23 +49,17 @@ export default function ClipReview() {
           </Button>
         </Link>
         <div className="h-4 w-px bg-border/50" />
-        <h1 className="text-sm font-medium truncate flex-1">{videoName}</h1>
+        <h1 className="text-sm font-medium truncate flex-1">{record.name}</h1>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 border-r border-border/50 flex flex-col p-6 gap-4 overflow-auto">
           <div className="flex gap-6 justify-center">
-            {videoUrl ? (
-              <video
-                src={videoUrl}
-                controls
-                className="w-full max-w-lg rounded-2xl bg-black shadow-2xl shadow-black/60"
-              />
-            ) : (
-              <div className="w-52 aspect-[9/16] bg-muted rounded-2xl flex items-center justify-center">
-                <p className="text-muted-foreground text-sm">No video</p>
-              </div>
-            )}
+            <video
+              src={record.url}
+              controls
+              className="w-full max-w-lg rounded-2xl bg-black shadow-2xl shadow-black/60"
+            />
           </div>
 
           <div>

@@ -1,58 +1,42 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
-
-interface VideoEntry {
-  id: string;
-  name: string;
-  url: string;
-  date: string;
-}
+import * as store from "../lib/videoStore";
 
 export default function Projects() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [videos, setVideos] = useState<VideoEntry[]>([]);
+  const [videos, setVideos] = useState(store.list());
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("clipforge_videos");
-    if (stored) {
-      try {
-        setVideos(JSON.parse(stored));
-      } catch {}
-    }
+    store.init().then(() => {
+      setVideos(store.list());
+      setLoading(false);
+    });
   }, []);
 
-  const saveVideos = (updated: VideoEntry[]) => {
-    setVideos(updated);
-    sessionStorage.setItem("clipforge_videos", JSON.stringify(updated));
-  };
-
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (inputRef.current) inputRef.current.value = "";
 
     setUploading(true);
-    const url = URL.createObjectURL(file);
-    const entry: VideoEntry = {
-      id: `video-${Date.now()}`,
-      name: file.name,
-      url,
-      date: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    const updated = [entry, ...videos];
-    saveVideos(updated);
+    const id = `video-${Date.now()}`;
+    const url = await store.add(id, file.name, file);
+    setVideos(store.list());
     setUploading(false);
-    navigate(`/projects/${entry.id}`, { state: { videoUrl: url, videoName: file.name } });
+    navigate(`/projects/${id}`, { state: { videoUrl: url, videoName: file.name } });
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">

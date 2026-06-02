@@ -1,15 +1,19 @@
-import { useRef, useState } from "react";
-import { Link, useParams, useLocation } from "react-router";
+import { useRef, useState, useEffect } from "react";
+import { Link, useParams } from "react-router";
 import { Button } from "../components/ui/button";
+import * as store from "../lib/videoStore";
 
 export default function ProjectDetail() {
   const { id } = useParams();
-  const location = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [record, setRecord] = useState(store.get(id || ""));
 
-  const videoUrl = (location.state as any)?.videoUrl || "";
-  const videoName = (location.state as any)?.videoName || "Untitled";
+  useEffect(() => {
+    store.init().then(() => {
+      setRecord(store.get(id || ""));
+    });
+  }, [id]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -21,6 +25,28 @@ export default function ProjectDetail() {
     setPlaying(!playing);
   };
 
+  if (!record) {
+    return (
+      <div className="flex flex-col h-[calc(100vh-3rem)]">
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
+          <Link to="/projects">
+            <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-muted-foreground hover:text-foreground text-xs">
+              Projects
+            </Button>
+          </Link>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground">Video not found</p>
+            <Link to="/projects">
+              <Button variant="outline" className="mt-4">Back to projects</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-3rem)]">
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
@@ -30,23 +56,19 @@ export default function ProjectDetail() {
           </Button>
         </Link>
         <div className="h-4 w-px bg-border/50" />
-        <h1 className="text-sm font-medium truncate flex-1">{videoName}</h1>
+        <h1 className="text-sm font-medium truncate flex-1">{record.name}</h1>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         <div className="w-[30%] min-w-60 border-r border-border/50 flex flex-col">
           <div className="bg-black aspect-video flex items-center justify-center relative">
-            {videoUrl ? (
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                className="size-full object-contain"
-                onClick={togglePlay}
-              />
-            ) : (
-              <p className="text-muted-foreground text-sm">No video loaded</p>
-            )}
-            {!playing && videoUrl && (
+            <video
+              ref={videoRef}
+              src={record.url}
+              className="size-full object-contain"
+              onClick={togglePlay}
+            />
+            {!playing && (
               <button
                 onClick={togglePlay}
                 className="absolute inset-0 flex items-center justify-center"
@@ -59,10 +81,12 @@ export default function ProjectDetail() {
           </div>
 
           <div className="p-3 border-b border-border/50">
-            <p className="text-[11px] text-muted-foreground mb-2">AI Segments (0)</p>
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <p className="text-xs text-muted-foreground">Processing not yet available</p>
-              <p className="text-[11px] text-muted-foreground/60 mt-1">Upload a video to begin</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[11px] text-muted-foreground">AI Segments (0)</p>
+            </div>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <p className="text-xs text-muted-foreground">No segments detected</p>
+              <p className="text-[11px] text-muted-foreground/60 mt-1">AI analysis is not yet available</p>
             </div>
           </div>
         </div>
@@ -74,7 +98,10 @@ export default function ProjectDetail() {
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">No transcript generated</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">AI transcription coming soon</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">AI transcription is not yet available</p>
+              <p className="text-[11px] text-muted-foreground/50 mt-4 max-w-xs">
+                Future updates will add Gemini-powered transcription and AI segment analysis.
+              </p>
             </div>
           </div>
         </div>
@@ -86,7 +113,7 @@ export default function ProjectDetail() {
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center">
               <p className="text-xs text-muted-foreground">No clips created</p>
-              <p className="text-[11px] text-muted-foreground/60 mt-1">Clips will appear here</p>
+              <p className="text-[11px] text-muted-foreground/60 mt-1">Clip creation will be available soon</p>
             </div>
           </div>
         </div>

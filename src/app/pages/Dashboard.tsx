@@ -1,29 +1,26 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
-
-interface VideoEntry {
-  id: string;
-  name: string;
-  url: string;
-  date: string;
-}
+import * as store from "../lib/videoStore";
 
 export default function Dashboard() {
-  const [videos, setVideos] = useState<VideoEntry[]>([]);
+  const [videos, setVideos] = useState(store.list());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("clipforge_videos");
-    if (stored) {
-      setVideos(JSON.parse(stored));
-    }
-    const handler = () => {
-      const s = sessionStorage.getItem("clipforge_videos");
-      if (s) setVideos(JSON.parse(s));
-    };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    store.init().then(() => {
+      setVideos(store.list());
+      setLoading(false);
+    });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-8">
@@ -61,7 +58,7 @@ export default function Dashboard() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {videos.map((v) => (
-            <Link key={v.id} to={`/projects/${v.id}`}>
+            <Link key={v.id} to={`/projects/${v.id}`} state={{ videoUrl: v.url, videoName: v.name }}>
               <div className="bg-card border border-border/60 rounded-xl overflow-hidden hover:border-primary/30 transition-all group cursor-pointer">
                 <div className="h-36 bg-muted flex items-center justify-center">
                   <video

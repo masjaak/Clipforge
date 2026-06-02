@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import { Button } from "../components/ui/button";
-
-interface VideoEntry {
-  id: string;
-  name: string;
-  url: string;
-  date: string;
-}
+import * as store from "../lib/videoStore";
 
 export default function Exports() {
-  const [videos, setVideos] = useState<VideoEntry[]>([]);
+  const [videos, setVideos] = useState(store.list());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("clipforge_videos");
-    if (stored) {
-      try {
-        setVideos(JSON.parse(stored));
-      } catch {}
-    }
+    store.init().then(() => {
+      setVideos(store.list());
+      setLoading(false);
+    });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">

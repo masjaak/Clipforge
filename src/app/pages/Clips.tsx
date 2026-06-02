@@ -2,31 +2,31 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { toast } from "sonner";
-
-interface VideoEntry {
-  id: string;
-  name: string;
-  url: string;
-  date: string;
-}
+import * as store from "../lib/videoStore";
 
 export default function Clips() {
   const [search, setSearch] = useState("");
-  const [videos, setVideos] = useState<VideoEntry[]>([]);
+  const [videos, setVideos] = useState(store.list());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("clipforge_videos");
-    if (stored) {
-      try {
-        setVideos(JSON.parse(stored));
-      } catch {}
-    }
+    store.init().then(() => {
+      setVideos(store.list());
+      setLoading(false);
+    });
   }, []);
 
   const filtered = videos.filter((v) =>
     v.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -55,7 +55,7 @@ export default function Clips() {
           </div>
           <h3 className="font-medium mb-2">No clips found</h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-            {search ? "Try a different search." : "Upload a video to create clips."}
+            {search ? "Try a different search." : "Upload a video to get started."}
           </p>
           {!search && (
             <Link to="/projects">
