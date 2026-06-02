@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Check, Sparkles, Lock } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
@@ -11,55 +10,50 @@ const templates = [
   {
     id: "minimal",
     name: "Minimal",
-    desc: "Clean, lightweight captions. Lets the content breathe.",
+    desc: "Clean, lightweight captions.",
     preview: ["Clean text", "No background", "Thin weight"],
     sampleText: "Every rejection made us stronger.",
     textClass: "font-light tracking-wide text-white drop-shadow",
-    accent: "from-zinc-900 to-zinc-950",
     locked: false,
     tag: null,
   },
   {
     id: "modern",
     name: "Modern",
-    desc: "Bold typography with subtle drop shadow. Works on any background.",
+    desc: "Bold typography with subtle drop shadow.",
     preview: ["Bold weight", "Drop shadow", "Auto contrast"],
     sampleText: "Every rejection made us stronger.",
     textClass: "font-semibold text-white drop-shadow-lg",
-    accent: "from-slate-800 to-slate-950",
     locked: false,
     tag: "Popular",
   },
   {
     id: "podcast",
     name: "Podcast",
-    desc: "Pill-shaped background. Centered, easy-to-read for talking heads.",
+    desc: "Pill-shaped background. Centered text.",
     preview: ["Pill background", "Centered", "Color-coded speakers"],
     sampleText: "Every rejection made us stronger.",
     textClass: "font-medium text-white bg-black/70 px-3 py-1 rounded-full backdrop-blur",
-    accent: "from-neutral-800 to-neutral-950",
     locked: false,
     tag: null,
   },
   {
     id: "bold",
     name: "Bold",
-    desc: "Massive, punchy text. Built for TikTok and Reels. High contrast.",
+    desc: "Massive, punchy text. Built for TikTok and Reels.",
     preview: ["Ultra bold", "All caps", "Full screen width"],
     sampleText: "EVERY REJECTION MADE US STRONGER.",
-    textClass: "font-black uppercase tracking-tight text-white text-shadow-lg",
-    accent: "from-rose-950 to-black",
+    textClass: "font-black uppercase tracking-tight text-white",
     locked: false,
     tag: "High impact",
   },
   {
     id: "hormozi",
     name: "Hormozi",
-    desc: "Yellow highlight on key words. The style that broke the internet.",
+    desc: "Yellow highlight on key words.",
     preview: ["Word highlights", "Key word emphasis", "Bold + yellow"],
     sampleText: null,
     textClass: "font-black text-white",
-    accent: "from-amber-950 to-black",
     locked: false,
     tag: "Trending",
   },
@@ -95,13 +89,13 @@ export default function Templates() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Caption Templates</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Choose a style preset. Applied to all new clips by default.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Choose a style preset for clips.</p>
         </div>
         <Button
-          className="bg-primary hover:bg-primary/90 text-white gap-2"
+          className="bg-primary hover:bg-primary/90 text-white"
           onClick={() => toast.success(`"${templates.find((t) => t.id === active)?.name}" set as default`)}
         >
-          <Check className="size-4" /> Save default
+          Save default
         </Button>
       </div>
 
@@ -113,12 +107,12 @@ export default function Templates() {
             className={cn(
               "text-left rounded-2xl border overflow-hidden transition-all",
               active === tmpl.id
-                ? "border-primary/60 shadow-[0_0_20px_oklch(0.68_0.22_295/0.15)]"
+                ? "border-primary/60"
                 : "border-border/60 hover:border-border",
               tmpl.locked && "opacity-60 cursor-not-allowed"
             )}
           >
-            <div className={cn("h-32 bg-gradient-to-br flex items-center justify-center px-4", tmpl.accent)}>
+            <div className="h-32 bg-muted flex items-center justify-center px-4">
               {tmpl.id === "hormozi" ? (
                 <HormoziPreview />
               ) : (
@@ -139,10 +133,9 @@ export default function Templates() {
                 </div>
                 {active === tmpl.id && (
                   <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="size-3 text-white" />
+                    <span className="text-white text-xs">✓</span>
                   </div>
                 )}
-                {tmpl.locked && <Lock className="size-3.5 text-muted-foreground" />}
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">{tmpl.desc}</p>
               <div className="flex flex-wrap gap-1.5">

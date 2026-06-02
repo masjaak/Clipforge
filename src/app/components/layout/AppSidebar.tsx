@@ -1,16 +1,11 @@
 import { useLocation, Link } from "react-router";
 import {
-  LayoutDashboard, FolderOpen, Scissors, Download, Layers,
-  Settings, CreditCard, Zap, ChevronDown, Plus, Bell,
-} from "lucide-react";
-import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator,
   useSidebar,
 } from "../ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -18,16 +13,16 @@ import {
 import { cn } from "../ui/utils";
 
 const navMain = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Projects", url: "/projects", icon: FolderOpen, badge: "4" },
-  { title: "Clips", url: "/clips", icon: Scissors, badge: "23" },
-  { title: "Exports", url: "/exports", icon: Download },
+  { title: "Dashboard", url: "/dashboard" },
+  { title: "Projects", url: "/projects" },
+  { title: "Clips", url: "/clips" },
+  { title: "Exports", url: "/exports" },
 ];
 
 const navTools = [
-  { title: "Templates", url: "/templates", icon: Layers },
-  { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Billing", url: "/billing", icon: CreditCard },
+  { title: "Templates", url: "/templates" },
+  { title: "Settings", url: "/settings" },
+  { title: "Billing", url: "/billing" },
 ];
 
 export function AppSidebar() {
@@ -41,8 +36,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="pb-2">
         <div className={cn("flex items-center gap-2.5 px-2 py-1", collapsed && "justify-center")}>
-          <div className="size-7 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-[0_0_16px_var(--cf-violet-glow)]">
-            <Zap className="size-4 text-white" strokeWidth={2.5} />
+          <div className="size-7 rounded-lg bg-primary flex items-center justify-center shrink-0">
+            <span className="text-white text-xs font-bold">C</span>
           </div>
           {!collapsed && (
             <span className="font-semibold text-sm tracking-tight text-foreground">
@@ -75,16 +70,7 @@ export function AppSidebar() {
                     )}
                   >
                     <Link to={item.url}>
-                      <item.icon className={cn("size-4", isActive(item.url) && "text-primary")} />
                       <span>{item.title}</span>
-                      {item.badge && !collapsed && (
-                        <Badge
-                          variant="secondary"
-                          className="ml-auto h-5 min-w-5 px-1.5 text-[10px] bg-muted text-muted-foreground border-0"
-                        >
-                          {item.badge}
-                        </Badge>
-                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -115,7 +101,6 @@ export function AppSidebar() {
                     )}
                   >
                     <Link to={item.url}>
-                      <item.icon className={cn("size-4", isActive(item.url) && "text-primary")} />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -137,14 +122,12 @@ export function AppSidebar() {
                   className="data-[state=open]:bg-sidebar-accent rounded-lg"
                 >
                   <Avatar className="size-7 rounded-lg">
-                    <AvatarImage src="https://api.dicebear.com/7.x/shapes/svg?seed=clipforge" />
-                    <AvatarFallback className="rounded-lg bg-primary/20 text-primary text-xs">JD</AvatarFallback>
+                    <AvatarFallback className="rounded-lg bg-primary/20 text-primary text-xs">U</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col text-left text-xs leading-tight">
-                    <span className="font-medium text-foreground truncate">Jamie Doe</span>
-                    <span className="text-muted-foreground truncate">jamie@studio.io</span>
+                    <span className="font-medium text-foreground truncate">User</span>
+                    <span className="text-muted-foreground truncate">user@team.io</span>
                   </div>
-                  <ChevronDown className="ml-auto size-3.5 text-muted-foreground" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -153,10 +136,7 @@ export function AppSidebar() {
                 className="w-56 bg-card border-border"
               >
                 <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="size-4 mr-2" /> Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Bell className="size-4 mr-2" /> Notifications
+                  Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">

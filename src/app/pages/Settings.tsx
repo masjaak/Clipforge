@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Camera, AlertTriangle, Save, Trash2, Key, Globe, Bell } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Switch } from "../components/ui/switch";
 import { Separator } from "../components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../components/ui/select";
@@ -26,9 +25,9 @@ function Section({ title, desc, children }: { title: string; desc?: string; chil
 }
 
 export default function Settings() {
-  const [displayName, setDisplayName] = useState("Jamie Doe");
-  const [email, setEmail] = useState("jamie@studio.io");
-  const [bio, setBio] = useState("Founder & content creator. Building in public.");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
   const [language, setLanguage] = useState("en");
   const [notifications, setNotifications] = useState({ processing: true, exports: true, digest: false });
   const [saving, setSaving] = useState(false);
@@ -50,33 +49,27 @@ export default function Settings() {
       <Section title="Profile" desc="Your public-facing information.">
         <div className="bg-card border border-border/60 rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Avatar className="size-14 rounded-xl">
-                <AvatarImage src="https://api.dicebear.com/7.x/shapes/svg?seed=clipforge" />
-                <AvatarFallback className="rounded-xl bg-primary/20 text-primary">JD</AvatarFallback>
-              </Avatar>
-              <button className="absolute -bottom-1 -right-1 size-5 rounded-full bg-primary flex items-center justify-center shadow">
-                <Camera className="size-2.5 text-white" />
-              </button>
-            </div>
+            <Avatar className="size-14 rounded-xl">
+              <AvatarFallback className="rounded-xl bg-primary/20 text-primary text-lg">U</AvatarFallback>
+            </Avatar>
             <div>
-              <p className="text-sm font-medium">Jamie Doe</p>
-              <p className="text-xs text-muted-foreground">Pro plan · Member since May 2026</p>
+              <p className="text-sm font-medium">{displayName || "User"}</p>
+              <p className="text-xs text-muted-foreground">Team member</p>
             </div>
           </div>
           <Separator className="bg-border/50" />
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Display name</Label>
-              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="h-9 bg-muted/40 border-border/50 text-sm" />
+              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" className="h-9 bg-muted/40 border-border/50 text-sm" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Email address</Label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="h-9 bg-muted/40 border-border/50 text-sm" />
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="you@example.com" className="h-9 bg-muted/40 border-border/50 text-sm" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Bio</Label>
-              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} className="bg-muted/40 border-border/50 text-sm resize-none h-20" />
+              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell us about yourself" className="bg-muted/40 border-border/50 text-sm resize-none h-20" />
             </div>
           </div>
         </div>
@@ -87,7 +80,7 @@ export default function Settings() {
       <Section title="Defaults" desc="Applied to all new projects and clips.">
         <div className="bg-card border border-border/60 rounded-xl p-5 space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground flex items-center gap-1.5"><Globe className="size-3" /> Transcript language</Label>
+            <Label className="text-xs text-muted-foreground">Transcript language</Label>
             <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger className="h-9 bg-muted/40 border-border/50 text-sm">
                 <SelectValue />
@@ -159,68 +152,12 @@ export default function Settings() {
         </div>
       </Section>
 
-      <Separator className="bg-border/40" />
-
-      <Section title="API keys" desc="Manage access tokens for integrations.">
-        <div className="bg-card border border-border/60 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Key className="size-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Personal API key</span>
-            </div>
-            <Button size="sm" variant="outline" className="h-7 text-xs border-border/60">
-              Generate key
-            </Button>
-          </div>
-          <div className="h-9 bg-muted/40 border border-border/50 rounded-lg flex items-center px-3 gap-2">
-            <span className="text-xs text-muted-foreground font-mono flex-1">cf_live_••••••••••••••••••••••••••••••</span>
-            <button className="text-xs text-primary hover:underline">Reveal</button>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-2">Used to authenticate requests to the ClipForge API.</p>
-        </div>
-      </Section>
-
       <div className="flex justify-between items-center pt-2">
-        <Button onClick={handleSave} className="bg-primary hover:bg-primary/90 text-white gap-2" disabled={saving}>
-          {saving ? <span className="size-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : <Save className="size-4" />}
-          Save changes
+        <Button onClick={handleSave} className="bg-primary hover:bg-primary/90 text-white" disabled={saving}>
+          {saving ? <span className="size-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : null}
+          {saving ? "Saving..." : "Save changes"}
         </Button>
       </div>
-
-      <Separator className="bg-border/40" />
-
-      <Section title="Danger zone" desc="Irreversible actions. Proceed with care.">
-        <div className="bg-destructive/5 border border-destructive/20 rounded-xl divide-y divide-destructive/10">
-          <div className="flex items-center justify-between p-4">
-            <div>
-              <p className="text-sm font-medium text-destructive-foreground">Delete all projects</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Permanently delete all videos, clips, and exports</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => toast.error("This action is permanent. Are you sure?", { action: { label: "Delete all", onClick: () => toast.success("Done") } })}
-            >
-              <Trash2 className="size-3 mr-1" /> Delete all
-            </Button>
-          </div>
-          <div className="flex items-center justify-between p-4">
-            <div>
-              <p className="text-sm font-medium text-destructive-foreground">Delete account</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Permanently close your account and erase all data</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => toast.error("Account deletion requires email confirmation")}
-            >
-              <AlertTriangle className="size-3 mr-1" /> Delete account
-            </Button>
-          </div>
-        </div>
-      </Section>
     </div>
   );
 }

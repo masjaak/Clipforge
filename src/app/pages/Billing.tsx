@@ -1,4 +1,3 @@
-import { CheckCircle2, Zap, TrendingUp, Video, Scissors, Download, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
@@ -66,31 +65,24 @@ const plans = [
 ];
 
 const usage = [
-  { label: "Minutes processed", used: 384, limit: 600, unit: "min", icon: Video },
-  { label: "Clips created", used: 87, limit: null, unit: "clips", icon: Scissors },
-  { label: "Exports this month", used: 156, limit: null, unit: "exports", icon: Download },
-  { label: "Storage used", used: 2.4, limit: 10, unit: "GB", icon: TrendingUp },
+  { label: "Minutes processed", used: 0, limit: 600, unit: "min" },
+  { label: "Clips created", used: 0, limit: null, unit: "clips" },
+  { label: "Exports this month", used: 0, limit: null, unit: "exports" },
+  { label: "Storage used", used: 0, limit: 10, unit: "GB" },
 ];
 
 function UsageBar({ item }: { item: typeof usage[0] }) {
   const pct = item.limit ? Math.min((item.used / item.limit) * 100, 100) : null;
-  const critical = pct != null && pct > 80;
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <item.icon className="size-3.5 text-muted-foreground" />
-          <span className="text-sm">{item.label}</span>
-        </div>
+        <span className="text-sm">{item.label}</span>
         <span className="text-xs font-mono text-muted-foreground">
           {item.used} {item.unit}{item.limit ? ` / ${item.limit} ${item.unit}` : " (unlimited)"}
         </span>
       </div>
       {pct != null && (
-        <Progress
-          value={pct}
-          className={cn("h-1.5", critical ? "[&>div]:bg-amber-400" : "[&>div]:bg-primary")}
-        />
+        <Progress value={pct} className="h-1.5 [&>div]:bg-primary" />
       )}
     </div>
   );
@@ -111,7 +103,7 @@ export default function Billing() {
             className={cn(
               "bg-card border rounded-2xl p-5 flex flex-col transition-all",
               plan.current
-                ? "border-primary/50 shadow-[0_0_24px_oklch(0.68_0.22_295/0.12)]"
+                ? "border-primary/50"
                 : "border-border/60"
             )}
           >
@@ -132,7 +124,7 @@ export default function Billing() {
             <ul className="space-y-2 flex-1 mb-5">
               {plan.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-primary shrink-0 mt-0.5">✓</span>
                   {f}
                 </li>
               ))}
@@ -146,10 +138,9 @@ export default function Billing() {
                   : "border-border/60"
               )}
               disabled={plan.current}
-              onClick={() => !plan.current && toast.info("Billing integration coming soon — shape powered by real Stripe events")}
+              onClick={() => !plan.current && toast.info("Billing integration coming soon")}
             >
               {plan.cta}
-              {!plan.current && plan.id === "scale" && <ArrowRight className="size-3.5 ml-1.5" />}
             </Button>
           </div>
         ))}
@@ -162,50 +153,6 @@ export default function Billing() {
             <UsageBar key={item.label} item={item} />
           ))}
         </div>
-      </div>
-
-      <div className="space-y-3">
-        <h2 className="text-sm font-medium">Billing history</h2>
-        <div className="bg-card border border-border/60 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[1fr_100px_100px_80px] gap-4 px-4 py-2.5 text-[11px] text-muted-foreground border-b border-border/50">
-            <span>Description</span><span>Date</span><span>Amount</span><span>Status</span>
-          </div>
-          {[
-            { desc: "Pro plan — June 2026", date: "Jun 1, 2026", amount: "$29.00", status: "Paid" },
-            { desc: "Pro plan — May 2026", date: "May 1, 2026", amount: "$29.00", status: "Paid" },
-            { desc: "Pro plan — April 2026", date: "Apr 1, 2026", amount: "$29.00", status: "Paid" },
-          ].map((row, i, arr) => (
-            <div
-              key={row.date}
-              className={cn(
-                "grid grid-cols-[1fr_100px_100px_80px] gap-4 px-4 py-3 text-sm items-center",
-                i < arr.length - 1 && "border-b border-border/40"
-              )}
-            >
-              <span className="text-xs">{row.desc}</span>
-              <span className="text-xs text-muted-foreground">{row.date}</span>
-              <span className="text-xs font-mono">{row.amount}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 w-fit">
-                {row.status}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-lg bg-primary/15 flex items-center justify-center">
-            <Zap className="size-4 text-primary" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">Next billing date</p>
-            <p className="text-xs text-muted-foreground">July 1, 2026 · $29.00</p>
-          </div>
-        </div>
-        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => toast.info("Payment method management coming soon")}>
-          Update payment
-        </Button>
       </div>
     </div>
   );
